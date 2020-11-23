@@ -1,2 +1,2 @@
 # Stolen Crown
-Game made using Pygames and Pplay for final project in game lab class at UFF.
+Game created using Pygames and PPlay for a final project in the game lab class at UFF.
