@@ -309,6 +309,7 @@ def FASE(dicio):
                     print("Game Time", cronometro)
                 background.draw()
                 janela.draw_text("Pressione espaço para continuar.", 150, 280, 50, [255, 255, 255], "Arial", True)
+                janela.update()
             
         if (pause == False):
             # Atualização do cronômetro
