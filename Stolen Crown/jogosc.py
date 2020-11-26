@@ -36,6 +36,8 @@ def atualizainimigo(lista1, lista2, c1, c2):
 # Desenha os inimigos da lista se ainda não chegaram ao fim
 def desenhainimigos(lista1, lista2, direcao):
     cont = 0
+
+    # Caminho 1
     for i in lista1:
         if(i.y + i.height < 0):
             lista1.remove(i)
@@ -52,7 +54,7 @@ def desenhainimigos(lista1, lista2, direcao):
             direcao['baixo'].x = i.x
             direcao['baixo'].y = i.y
             direcao['baixo'].draw()
-
+    # Caminho 2
     for i in lista2:
         if(i.y + i.height < 0):
             lista2.remove(i)
@@ -80,6 +82,143 @@ def FASE(dicio):
     # Inicialização do teclado e do mouse
     mouse = Window.get_mouse()
     teclado = Window.get_keyboard()
+
+    # Inicializa e posiciona os slots
+    slotarma = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma.x = 0
+    slotarma.y = 64
+    slotarma1 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma1.x = 0
+    slotarma1.y = 128
+    slotarma2 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma2.x = 0
+    slotarma2.y = 192
+    slotarma3 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma3.x = 64
+    slotarma3.y = 256
+    slotarma4 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma4.x = 128
+    slotarma4.y = 256
+    slotarma5 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma5.x = 192
+    slotarma5.y = 256
+    slotarma6 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma6.x = 192
+    slotarma6.y = 320
+    slotarma7 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma7.x = 192
+    slotarma7.y = 384
+    slotarma8 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma8.x = 192
+    slotarma8.y = 448
+    slotarma9 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma9.x = 256
+    slotarma9.y = 512
+    slotarma10 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma10.x = 320
+    slotarma10.y = 512
+    slotarma11 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma11.x = 384
+    slotarma11.y = 512
+    slotarma12 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma12.x = 448
+    slotarma12.y = 512
+    slotarma13 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma13.x = 512
+    slotarma13.y = 512
+    slotarma14 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma14.x = 576
+    slotarma14.y = 512
+    slotarma15 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma15.x = 640
+    slotarma15.y = 512
+    slotarma16 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma16.x = 704
+    slotarma16.y = 512
+    slotarma17 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma17.x = 896
+    slotarma17.y = 512
+    slotarma18 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma18.x = 896
+    slotarma18.y = 448
+    slotarma19 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma19.x = 896
+    slotarma19.y = 384
+    slotarma20 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma20.x = 896
+    slotarma20.y = 320
+    slotarma21 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma21.x = 896
+    slotarma21.y = 256
+    slotarma22 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma22.x = 832
+    slotarma22.y = 256
+    slotarma23 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma23.x = 768
+    slotarma23.y = 256
+    slotarma24 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma24.x = 704
+    slotarma24.y = 256
+    slotarma25 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma25.x = 640
+    slotarma25.y = 256
+    slotarma26 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma26.x = 576
+    slotarma26.y = 320
+    slotarma27 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma27.x = 512
+    slotarma27.y = 320
+    slotarma28 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma28.x = 448
+    slotarma28.y = 320
+    slotarma29 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma29.x = 384
+    slotarma29.y = 320
+    slotarma30 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma30.x = 576
+    slotarma30.y = 192
+    slotarma31 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma31.x = 896
+    slotarma31.y = 64
+    slotarma32 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma32.x = 832
+    slotarma32.y = 64
+    slotarma33 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma33.x = 768
+    slotarma33.y = 64
+    slotarma34 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma34.x = 704
+    slotarma34.y = 0
+    slotarma35 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma35.x = 640
+    slotarma35.y = 0
+    slotarma36 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma36.x = 576
+    slotarma36.y = 0
+    slotarma37 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma37.x = 512
+    slotarma37.y = 0
+    slotarma38 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma38.x = 448
+    slotarma38.y = 0
+    slotarma39 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma39.x = 384
+    slotarma39.y = 128
+    slotarma40 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma40.x = 384
+    slotarma40.y = 64
+    slotarma41 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma41.x = 320
+    slotarma41.y = 64
+    slotarma42 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma42.x = 256
+    slotarma42.y = 64
+    slotarma43 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma43.x = 192
+    slotarma43.y = 64
+
+    # Cria uma lista com os slots inicializados
+    listaslots = {slotarma, slotarma1, slotarma2, slotarma3, slotarma4, slotarma5, slotarma6, slotarma7, slotarma8, slotarma9, slotarma10, slotarma11, slotarma12, slotarma13, slotarma14, slotarma15, slotarma16, slotarma17, slotarma18, slotarma19, slotarma20, slotarma20, slotarma21, slotarma22, slotarma23, slotarma24, slotarma25, slotarma26, slotarma27, slotarma28, slotarma29, slotarma30, slotarma31, slotarma32, slotarma33, slotarma34, slotarma35, slotarma36, slotarma37, slotarma38, slotarma39, slotarma40, slotarma41, slotarma42, slotarma43}
 
     # Inicicialização de variáveis importantes
     vidas = 10
@@ -190,6 +329,10 @@ def FASE(dicio):
         # Desenho na tela
         background.draw()
 
+        # Desenha slots
+        for i in listaslots:
+            i.draw()
+
         # Desenho dos inimigos e atualização da contagem de vidas
         vidas -= desenhainimigos(listadesoldados1, listadesoldados2, svdirecao)
         janela.update()
@@ -227,4 +370,3 @@ def jogo(fase):
         janela.update()
         # Retorna 0 para voltar ao menu no caso ESC
     return 0
-
