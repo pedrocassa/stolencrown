@@ -1,7 +1,15 @@
 from PPlay.window import *
 from PPlay.gameimage import *
 from PPlay.sprite import *
-from PPlay.gameobject import*
+from PPlay.gameobject import *
+
+# Verifica a quantidade de vidas e se o jogador perdeu
+def gameover(vidas, janela):
+    if(vidas == 0):
+        janela.draw_text("Game Over!", 230, 250, 100, [255, 255, 255], "Arial", True)
+        janela.update()
+        janela.delay(5000)
+        exit()
 
 # Verifica se o inimigo colidiu com as linhas de subida ou descida
 def colidiu(x, c1):
@@ -32,6 +40,64 @@ def atualizainimigo(lista1, lista2, c1, c2):
         i.move_x(andax)
         i.move_y(anday)
 
+# Atualiza a direção da arma de acordo com a posição do primeiro soldado da fila
+def armadirecao(primeiro, armas):
+    for i in armas:
+        if(i.x + i.width/2 + 14 < primeiro.x + primeiro.width/2):
+            if(i.y + i.height/2 + 14 < primeiro.y + primeiro.height/2):
+                i.direction = 'Sudeste'
+            elif (i.y + i.height/2 - 14 > primeiro.y + primeiro.height / 2):
+                i.direction = 'Nordeste'
+            else:
+                i.direction = 'Leste'
+        elif (i.x + i.width/2 - 14 > primeiro.x + primeiro.width / 2):
+            if (i.y + i.height/2 + 14 < primeiro.y + primeiro.height / 2):
+                i.direction = 'Sudoeste'
+            elif (i.y + i.height/2 - 14 > primeiro.y + primeiro.height / 2):
+                i.direction = 'Noroeste'
+            else:
+                i.direction = 'Oeste'
+        else:
+            if (i.y + i.height / 2 > primeiro.y + primeiro.height / 2):
+                i.direction = 'Norte'
+            elif (i.y + i.height / 2 < primeiro.y + primeiro.height / 2):
+                i.direction = 'Sul'
+
+# Desenha arma de acordo com a direção dela
+def desenhaarma1(armas, direcao):
+    for i in armas:
+        if (i.direction == 'Norte'):
+            direcao['Norte'].x = i.x
+            direcao['Norte'].y = i.y
+            direcao['Norte'].draw()
+        elif (i.direction == 'Leste'):
+            direcao['Leste'].x = i.x
+            direcao['Leste'].y = i.y
+            direcao['Leste'].draw()
+        elif (i.direction == 'Sul'):
+            direcao['Sul'].x = i.x
+            direcao['Sul'].y = i.y
+            direcao['Sul'].draw()
+        elif (i.direction == 'Oeste'):
+            direcao['Oeste'].x = i.x
+            direcao['Oeste'].y = i.y
+            direcao['Oeste'].draw()
+        elif (i.direction == 'Nordeste'):
+            direcao['Nordeste'].x = i.x
+            direcao['Nordeste'].y = i.y
+            direcao['Nordeste'].draw()
+        elif (i.direction == 'Sudeste'):
+            direcao['Sudeste'].x = i.x
+            direcao['Sudeste'].y = i.y
+            direcao['Sudeste'].draw()
+        elif (i.direction == 'Noroeste'):
+            direcao['Noroeste'].x = i.x
+            direcao['Noroeste'].y = i.y
+            direcao['Noroeste'].draw()
+        else:
+            direcao['Sudoeste'].x = i.x
+            direcao['Sudoeste'].y = i.y
+            direcao['Sudoeste'].draw()
 
 # Desenha os inimigos da lista se ainda não chegaram ao fim
 def desenhainimigos(lista1, lista2, direcao):
@@ -39,10 +105,10 @@ def desenhainimigos(lista1, lista2, direcao):
 
     # Caminho 1
     for i in lista1:
-        if(i.y + i.height < 0):
+        if (i.y + i.height < 0):
             lista1.remove(i)
             cont += 1
-        elif(i.direction == 'esquerda'):
+        elif (i.direction == 'esquerda'):
             direcao['esquerda'].x = i.x
             direcao['esquerda'].y = i.y
             direcao['esquerda'].draw()
@@ -54,12 +120,13 @@ def desenhainimigos(lista1, lista2, direcao):
             direcao['baixo'].x = i.x
             direcao['baixo'].y = i.y
             direcao['baixo'].draw()
+
     # Caminho 2
     for i in lista2:
-        if(i.y + i.height < 0):
+        if (i.y + i.height < 0):
             lista2.remove(i)
             cont += 1
-        elif(i.direction == 'esquerda'):
+        elif (i.direction == 'esquerda'):
             direcao['esquerda'].x = i.x
             direcao['esquerda'].y = i.y
             direcao['esquerda'].draw()
@@ -73,152 +140,208 @@ def desenhainimigos(lista1, lista2, direcao):
             direcao['baixo'].draw()
     return cont
 
-def FASE(dicio):
-    # Inicialização da janela e background estático
-    janela = Window(1024, 640)
-    background = GameImage("Imagens/Jogo/background2.jpg")
-    janela.set_title("Stolen Crown")
+# Função da fase
+def FASE(janela, background, mouse, teclado, dicio):
 
-    # Inicialização do teclado e do mouse
-    mouse = Window.get_mouse()
-    teclado = Window.get_keyboard()
+    # Inicializa sprites da arma em todas as direções
+    arma1Norte = Sprite("Imagens/Jogo/Arma1/arma1cima.png")
+    arma1Nordeste = Sprite("Imagens/Jogo/Arma1/arma1nordeste.png")
+    arma1Leste = Sprite("Imagens/Jogo/Arma1/arma1direita.png")
+    arma1Sudeste = Sprite("Imagens/Jogo/Arma1/arma1sudeste.png")
+    arma1Sul = Sprite("Imagens/Jogo/Arma1/arma1baixo.png")
+    arma1Sudoeste = Sprite("Imagens/Jogo/Arma1/arma1sudoeste.png")
+    arma1Oeste = Sprite("Imagens/Jogo/Arma1/arma1esquerda.png")
+    arma1Noroeste = Sprite("Imagens/Jogo/Arma1/arma1noroeste.png")
+
+    # Dicionário com as direções das armas
+    rota_arma = {'Norte': arma1Norte, 'Nordeste': arma1Nordeste, 'Leste': arma1Leste, "Sudeste": arma1Sudeste,
+                 'Sul': arma1Sul, 'Sudoeste': arma1Sudoeste, 'Oeste': arma1Oeste, 'Noroeste': arma1Noroeste}
 
     # Inicializa e posiciona os slots
-    slotarma = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma.x = 0
     slotarma.y = 64
-    slotarma1 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma.used = False
+    slotarma1 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma1.x = 0
     slotarma1.y = 128
-    slotarma2 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma1.used = False
+    slotarma2 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma2.x = 0
     slotarma2.y = 192
-    slotarma3 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma2.used = False
+    slotarma3 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma3.x = 64
     slotarma3.y = 256
-    slotarma4 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma3.used = False
+    slotarma4 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma4.x = 128
     slotarma4.y = 256
-    slotarma5 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma4.used = False
+    slotarma5 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma5.x = 192
     slotarma5.y = 256
-    slotarma6 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma5.used = False
+    slotarma6 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma6.x = 192
     slotarma6.y = 320
-    slotarma7 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma6.used = False
+    slotarma7 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma7.x = 192
     slotarma7.y = 384
-    slotarma8 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma7.used = False
+    slotarma8 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma8.x = 192
     slotarma8.y = 448
-    slotarma9 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma8.used = False
+    slotarma9 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma9.x = 256
     slotarma9.y = 512
-    slotarma10 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma9.used = False
+    slotarma10 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma10.x = 320
     slotarma10.y = 512
-    slotarma11 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma10.used = False
+    slotarma11 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma11.x = 384
     slotarma11.y = 512
-    slotarma12 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma11.used = False
+    slotarma12 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma12.x = 448
     slotarma12.y = 512
-    slotarma13 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma12.used = False
+    slotarma13 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma13.x = 512
     slotarma13.y = 512
-    slotarma14 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma13.used = False
+    slotarma14 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma14.x = 576
     slotarma14.y = 512
-    slotarma15 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma14.used = False
+    slotarma15 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma15.x = 640
     slotarma15.y = 512
-    slotarma16 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma15.used = False
+    slotarma16 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma16.x = 704
     slotarma16.y = 512
-    slotarma17 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma16.used = False
+    slotarma17 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma17.x = 896
     slotarma17.y = 512
-    slotarma18 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma17.used = False
+    slotarma18 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma18.x = 896
     slotarma18.y = 448
-    slotarma19 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma18.used = False
+    slotarma19 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma19.x = 896
     slotarma19.y = 384
-    slotarma20 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma19.used = False
+    slotarma20 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma20.x = 896
     slotarma20.y = 320
-    slotarma21 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma20.used = False
+    slotarma21 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma21.x = 896
     slotarma21.y = 256
-    slotarma22 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma21.used = False
+    slotarma22 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma22.x = 832
     slotarma22.y = 256
-    slotarma23 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma22.used = False
+    slotarma23 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma23.x = 768
     slotarma23.y = 256
-    slotarma24 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma23.used = False
+    slotarma24 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma24.x = 704
     slotarma24.y = 256
-    slotarma25 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma24.used = False
+    slotarma25 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma25.x = 640
     slotarma25.y = 256
-    slotarma26 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma25.used = False
+    slotarma26 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma26.x = 576
     slotarma26.y = 320
-    slotarma27 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma26.used = False
+    slotarma27 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma27.x = 512
     slotarma27.y = 320
-    slotarma28 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma27.used = False
+    slotarma28 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma28.x = 448
     slotarma28.y = 320
-    slotarma29 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma28.used = False
+    slotarma29 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma29.x = 384
     slotarma29.y = 320
-    slotarma30 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma29.used = False
+    slotarma30 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma30.x = 576
     slotarma30.y = 192
-    slotarma31 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma30.used = False
+    slotarma31 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma31.x = 896
     slotarma31.y = 64
-    slotarma32 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma31.used = False
+    slotarma32 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma32.x = 832
     slotarma32.y = 64
-    slotarma33 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma32.used = False
+    slotarma33 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma33.x = 768
     slotarma33.y = 64
-    slotarma34 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma33.used = False
+    slotarma34 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma34.x = 704
     slotarma34.y = 0
-    slotarma35 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma34.used = False
+    slotarma35 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma35.x = 640
     slotarma35.y = 0
-    slotarma36 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma35.used = False
+    slotarma36 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma36.x = 576
     slotarma36.y = 0
-    slotarma37 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma36.used = False
+    slotarma37 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma37.x = 512
     slotarma37.y = 0
-    slotarma38 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma37.used = False
+    slotarma38 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma38.x = 448
     slotarma38.y = 0
-    slotarma39 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma38.used = False
+    slotarma39 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma39.x = 384
     slotarma39.y = 128
-    slotarma40 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma39.used = False
+    slotarma40 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma40.x = 384
     slotarma40.y = 64
-    slotarma41 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma40.used = False
+    slotarma41 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma41.x = 320
     slotarma41.y = 64
-    slotarma42 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma41.used = False
+    slotarma42 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma42.x = 256
     slotarma42.y = 64
-    slotarma43 = Sprite("Imagens/Jogo/slotarma.png")
+    slotarma42.used = False
+    slotarma43 = Sprite("Imagens/Jogo/slotarma.png", 1)
     slotarma43.x = 192
     slotarma43.y = 64
+    slotarma43.used = False
 
     # Cria uma lista com os slots inicializados
-    listaslots = {slotarma, slotarma1, slotarma2, slotarma3, slotarma4, slotarma5, slotarma6, slotarma7, slotarma8, slotarma9, slotarma10, slotarma11, slotarma12, slotarma13, slotarma14, slotarma15, slotarma16, slotarma17, slotarma18, slotarma19, slotarma20, slotarma20, slotarma21, slotarma22, slotarma23, slotarma24, slotarma25, slotarma26, slotarma27, slotarma28, slotarma29, slotarma30, slotarma31, slotarma32, slotarma33, slotarma34, slotarma35, slotarma36, slotarma37, slotarma38, slotarma39, slotarma40, slotarma41, slotarma42, slotarma43}
+    listaslots = {slotarma, slotarma1, slotarma2, slotarma3, slotarma4, slotarma5, slotarma6, slotarma7, slotarma8,
+                  slotarma9, slotarma10, slotarma11, slotarma12, slotarma13, slotarma14, slotarma15, slotarma16,
+                  slotarma17, slotarma18, slotarma19, slotarma20, slotarma20, slotarma21, slotarma22, slotarma23,
+                  slotarma24, slotarma25, slotarma26, slotarma27, slotarma28, slotarma29, slotarma30, slotarma31,
+                  slotarma32, slotarma33, slotarma34, slotarma35, slotarma36, slotarma37, slotarma38, slotarma39,
+                  slotarma40, slotarma41, slotarma42, slotarma43}
 
     # Inicicialização de variáveis importantes
     vidas = 10
@@ -226,8 +349,11 @@ def FASE(dicio):
     qtddeinimigos = 0
     wavest = 0
     wavessv = 0
+    foco = 0
+    perdeu = 0
     listadesoldados1 = []
-    listadesoldados2= []
+    listadesoldados2 = []
+    listadearmas = []
 
     # Inicialização dos soldados verdes
     svesquerda = Sprite("Imagens/Jogo/soldadoverdeesquerda.png", 1)
@@ -294,55 +420,101 @@ def FASE(dicio):
     caminho2 = {'p1': p5, 'p2': p6, 'p3': p7, 'p4': p8}
     caminhos = {'1': caminho1, '2': caminho2}
 
+    print("Jogo iniciado", dicio)
+    pause = False
     # GameLoop
-    while(not teclado.key_pressed("esc")):
+    while (not teclado.key_pressed("esc")):
+        if (teclado.key_pressed("enter")):
+            pause = True
+            print("Jogo pausado")
+            print("Game Time", cronometro)
+            while (pause == True):
+                if (teclado.key_pressed("space")):
+                    pause = False
+                    print("Jogo despausado")
+                    print("Game Time", cronometro)
+                background.draw()
+                janela.draw_text("Pressione espaço para continuar.", 110, 280, 50, [255, 255, 255], "Arial", True)
+                janela.update()
 
-        # Atualização do cronômetro
-        cronometro += janela.delta_time()
+        if (pause == False):
+            # Atualização do cronômetro
+            cronometro += janela.delta_time()
 
-        # Criação da lista de soldados
-        if(cronometro >= 1.2 and wavest < dicio['wavestotais'] and wavessv < dicio['wavessv'] and qtddeinimigos < dicio['soldadosverdes']):
-            cronometro = 0
-            soldadoverde = Sprite("Imagens/Jogo/soldadoverdeesquerda.png",1)
-            soldadoverde.x = 1024
-            soldadoverde.y = 160
-            soldadoverde.direction = 'esquerda'
+            # Criação da lista de soldados
+            if (cronometro >= 1.2 and wavest < dicio['wavestotais'] and wavessv < dicio['wavessv'] and qtddeinimigos <
+                    dicio['soldadosverdes']):
+                cronometro = 0
+                soldadoverde = Sprite("Imagens/Jogo/soldadoverdeesquerda.png", 1)
+                soldadoverde.x = 1024
+                soldadoverde.y = 160
+                soldadoverde.direction = 'esquerda'
 
-            listadesoldados1.append(soldadoverde)
+                listadesoldados1.append(soldadoverde)
 
-            soldadoverde1 = Sprite("Imagens/Jogo/soldadoverdeesquerda.png", 1)
-            soldadoverde1.x = 800
-            soldadoverde1.y = 640
-            soldadoverde1.direction = 'cima'
+                soldadoverde1 = Sprite("Imagens/Jogo/soldadoverdeesquerda.png", 1)
+                soldadoverde1.x = 800
+                soldadoverde1.y = 640
+                soldadoverde1.direction = 'cima'
 
-            listadesoldados2.append(soldadoverde1)
+                listadesoldados2.append(soldadoverde1)
 
-            qtddeinimigos += 1
-        elif(qtddeinimigos == dicio['soldadosverdes'] and cronometro >= 15):
-            qtddeinimigos = 0
-            wavest += 1
-            wavessv += 1
+                qtddeinimigos += 1
+            elif (qtddeinimigos == dicio['soldadosverdes'] and cronometro >= 15):
+                qtddeinimigos = 0
+                wavest += 1
+                wavessv += 1
 
-        # Atualização da posição dos inimigos
-        atualizainimigo(listadesoldados1, listadesoldados2, caminho1, caminho2)
+            # Verifica se está cima e se houve clique
+            for i in listaslots:
+                if(mouse.is_over_area([i.x, i.y],[i.x + 64, i.y + 64]) and mouse.is_button_pressed(1)):
+                    arma1 = Sprite("Imagens/Jogo/basearma1.png")
+                    arma1.x = i.x
+                    arma1.y = i.y
+                    arma1.direction = 'Norte'
+                    i.used = True
+                    listadearmas.append(arma1)
 
-        # Desenho na tela
-        background.draw()
+            # Atualização da posição dos inimigos
+            atualizainimigo(listadesoldados1, listadesoldados2, caminho1, caminho2)
 
-        # Desenha slots
-        for i in listaslots:
-            i.draw()
+            # Atualiza direção da arma em relação ao primeiro inimigo do caminho 1
+            if(listadesoldados1 != [] and listadearmas != []):
+                armadirecao(listadesoldados1[0], listadearmas)
+            # Atualiza direção da arma em relação ao primeiro inimigo do caminho 1
+            if (listadesoldados2 != [] and listadearmas != []):
+                if(listadesoldados2[foco] == []):
+                    armadirecao(listadesoldados2[foco + 1], listadearmas)
+                else:
+                    armadirecao(listadesoldados2[foco], listadearmas)
 
-        # Desenho dos inimigos e atualização da contagem de vidas
-        vidas -= desenhainimigos(listadesoldados1, listadesoldados2, svdirecao)
-        janela.update()
+            # Desenho na tela
+            background.draw()
+
+            # Desenha slots
+            for i in listaslots:
+                if(i.used == False):
+                    i.draw()
+
+            # Desenha armas
+            desenhaarma1(listadearmas, rota_arma)
+
+            # Desenho dos inimigos e atualização da contagem de vidas
+            vidas -= desenhainimigos(listadesoldados1, listadesoldados2, svdirecao)
+
+            # Verifica se houve o game over;
+            gameover(vidas, janela)
+
+            # Update da janela
+            janela.update()
 
     # Retorna 0 para voltar ao menu no caso ESC
     return 0
 
+
 def jogo(fase):
 
-    #Inicialização da janela e background estático
+    # Inicialização da janela e background estático
     janela = Window(1024, 640)
     background = GameImage("Imagens/Jogo/background2.jpg")
     janela.set_title("Stolen Crown")
@@ -357,16 +529,19 @@ def jogo(fase):
     fase3 = {'wavestotais': 10, 'wavessv': 5, 'soldadosverdes': 7, 'wavessp': 5, 'soldadospratas': 5}
 
     while (not teclado.key_pressed("esc")):
+
         # Deixa o jogo pausado até clicarem espaço e direciona para a fase escolhida
-        if(teclado.key_pressed("space") and fase == 1):
-            FASE(fase1)
-        elif(teclado.key_pressed("space") and fase == 2):
-            FASE(fase2)
-        elif(teclado.key_pressed("space") and fase == 3):
-            FASE(fase3)
+        if (teclado.key_pressed("space") and fase == 1):
+            FASE(janela, background, mouse, teclado, fase1)
+        elif (teclado.key_pressed("space") and fase == 2):
+            FASE(janela, background, mouse, teclado, fase2)
+        elif (teclado.key_pressed("space") and fase == 3):
+            FASE(janela, background, mouse, teclado, fase3)
+
         # Desenho na tela
         background.draw()
         janela.draw_text("Pressione espaço para iniciar.", 150, 280, 50, [255, 255, 255], "Arial", True)
         janela.update()
+
         # Retorna 0 para voltar ao menu no caso ESC
     return 0
