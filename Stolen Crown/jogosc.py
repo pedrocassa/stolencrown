@@ -73,6 +73,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde.x = 1024
             soldadoverde.y = 160
             soldadoverde.direction = 'esquerda'
+            soldadoverde.morto = False
             soldadoverde.vida = 100
             soldadoverde.path = 1
             lista1.append(soldadoverde)
@@ -87,6 +88,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde1.x = 800
             soldadoverde1.y = 640
             soldadoverde1.direction = 'cima'
+            soldadoverde1.morto = False
             soldadoverde1.vida = 100
             soldadoverde1.path = 2
             lista1.append(soldadoverde1)
@@ -107,6 +109,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde.x = 1024
             soldadoverde.y = 160
             soldadoverde.direction = 'esquerda'
+            soldadoverde.morto = False
             soldadoverde.vida = 100
             soldadoverde.path = 1
             lista1.append(soldadoverde)
@@ -123,6 +126,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde1.x = 800
             soldadoverde1.y = 640
             soldadoverde1.direction = 'cima'
+            soldadoverde1.morto = False
             soldadoverde1.vida = 100
             soldadoverde1.path = 2
             lista1.append(soldadoverde1)
@@ -220,12 +224,17 @@ def criatiros(lista, armas, soldados, cronometro):
 def matasoldado(tiros, soldados, dinheiro):
     for i in tiros:
         i.alvo.vida -= i.dano
-        print(i.alvo.vida)
         if(i.alvo.vida <= 0):
-            soldados.remove(i.alvo)
+            i.alvo.morto = True
             dinheiro += 20
         tiros.remove(i)
     return dinheiro
+
+def limpalista(soldados):
+    for i in soldados:
+        print(i.vida, i.morto)
+        if(i.morto == True):
+            soldados.remove(i)
 
 # Desenha os inimigos da lista se ainda não chegaram ao fim
 def desenhainimigos(lista1, direcao):
@@ -635,15 +644,17 @@ def FASE(janela, background, mouse, teclado, fase):
 
             # Cria lista de armas
             dinheiro = crialistadearmas(listadearmas, listaslots, mouse, dinheiro)
-    
+
             # Cria lista de tiros
             cronometro3 = criatiros(listadetiros, listadearmas, listadesoldados, cronometro3)
 
             # Atualização da posição dos inimigos
             atualizainimigo(listadesoldados, caminho1, caminho2, janela)
-            
+
             # Verifica se houve tiro, faz o dano, e remove o soldado da lista caso a vida chegue a 0
             dinheiro = matasoldado(listadetiros, listadesoldados, dinheiro)
+
+            limpalista(listadesoldados)
 
             # Atualiza direção da arma em relação ao primeiro inimigo do caminho 1
             if(listadesoldados != [] and listadearmas != []):
@@ -662,14 +673,14 @@ def FASE(janela, background, mouse, teclado, fase):
 
             # Desenho dos inimigos e atualização da contagem de vidas
             vidas -= desenhainimigos(listadesoldados, svdirecao)
-            
+
             # Desenha os tiros
             for i in listadetiros:
                 i.draw()
 
             # Verifica se houve o game over
             gameover(vidas, janela)
-            
+
             # Verifica condição de vitória
             victory(fase, indice, listadesoldados, janela)
 
