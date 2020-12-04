@@ -1,4 +1,94 @@
+from PPlay.window import *
+from PPlay.gameimage import *
+from PPlay.sprite import *
+from PPlay.gameobject import *
 
+# Verifica a quantidade de vidas e se o jogador perdeu
+def gameover(vidas, janela):
+    if(vidas == 0):
+        janela.draw_text("Game Over!", 230, 250, 100, [255, 255, 255], "Arial", True)
+        janela.update()
+        janela.delay(5000)
+        exit()
+
+# Verifica se chegou ao final da lista fase
+def victory(fase, x, soldados, janela):
+    if (x == len(fase) and soldados == []):
+        janela.draw_text("Victory", 350, 250, 100, [255, 255, 255], "Arial", True)
+        janela.update()
+        janela.delay(5000)
+        exit()
+
+# Pausa o jogo caso o jogador clique no enter e despausa quando aperta space
+def pausado(janela, background, teclado):
+    pause = True
+    while (pause == True):
+        if (teclado.key_pressed("space")):
+            pause = False
+        background.draw()
+        janela.draw_text("Pressione espaço para continuar.", 110, 280, 50, [255, 255, 255], "Arial", True)
+        janela.update()
+    return pause
+
+# Verifica se o inimigo colidiu com as linhas de subida ou descida
+def colidiu(x, c1):
+    if (x.collided(c1['p1'])):
+        x.direction = 'cima'
+        return 0, -30
+    elif (x.collided(c1['p2'])):
+        x.direction = 'baixo'
+        return 0, 30
+    elif (x.collided(c1['p3'])):
+        x.direction = 'cima'
+        return 0, -30
+    elif (x.collided(c1['p4'])):
+        x.direction = 'cima'
+        return 0, -30
+    else:
+        x.direction = 'esquerda'
+        return -30, 0
+
+# Atualiza a posição dos soldados na tela, pelo caminho 1
+def atualizainimigo(lista1, c1, c2, janela):
+    for i in lista1:
+        if (i.vivo):
+            if(i.path == 1):
+                andax, anday = colidiu(i, c1)
+                i.move_x(andax * janela.delta_time())
+                i.move_y(anday * janela.delta_time())
+            else:
+                andax, anday = colidiu(i, c2)
+                i.move_x(andax * janela.delta_time())
+                i.move_y(anday * janela.delta_time())
+        else:
+            i.cronometro += 1
+            if(i.cronometro > 20):
+                lista1.remove(i)
+
+# Cria a lista de soldados
+def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, qtd1, qtd2, x):
+    acabouw1 = False
+    acabouw2 = False
+
+    if(x < len(fase1) - 1 and fase1[x] != 0 and fase1[x + 1] != 0):
+        if (cronometro1 >= 2.5 and waves_totais < len(fase1) / 2 and x < len(fase1) and qtd1 < fase1[x]):
+            cronometro1 = 0
+            qtd1 += 1
+            soldadoverde = Sprite("Imagens/Jogo/soldadoverdeesquerda.png", 1)
+            soldadoverde.x = 1024
+            soldadoverde.y = 160
+            soldadoverde.direction = 'esquerda'
+            soldadoverde.vida = 100
+            soldadoverde.vivo = True
+            soldadoverde.cronometro = 0
+            soldadoverde.path = 1
+            lista1.append(soldadoverde)
+
+        elif (x < len(fase1) and qtd1 == fase1[x]and fase1[x] != 0):
+            acabouw1 = True
+
+        if (cronometro2 >= 2.5 and waves_totais < len(fase1) / 2 and x < len(fase1) - 1 and qtd2 < fase1[x + 1] and fase1[x + 1] != 0):
+            cronometro2 = 0
             qtd2 += 1
             soldadoverde1 = Sprite("Imagens/Jogo/soldadoverdeesquerda.png", 1)
             soldadoverde1.x = 800
