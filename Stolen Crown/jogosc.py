@@ -1,95 +1,12 @@
-from PPlay.window import *
-from PPlay.gameimage import *
-from PPlay.sprite import *
-from PPlay.gameobject import *
 
-# Verifica a quantidade de vidas e se o jogador perdeu
-def gameover(vidas, janela):
-    if(vidas == 0):
-        janela.draw_text("Game Over!", 230, 250, 100, [255, 255, 255], "Arial", True)
-        janela.update()
-        janela.delay(5000)
-        exit()
-
-# Verifica se chegou ao final da lista fase
-def victory(fase, x, soldados, janela):
-    if (x == len(fase) and soldados == []):
-        janela.draw_text("Victory", 350, 250, 100, [255, 255, 255], "Arial", True)
-        janela.update()
-        janela.delay(5000)
-        exit()
-
-# Pausa o jogo caso o jogador clique no enter e despausa quando aperta space
-def pausado(janela, background, teclado):
-    pause = True
-    while (pause == True):
-        if (teclado.key_pressed("space")):
-            pause = False
-        background.draw()
-        janela.draw_text("Pressione espaço para continuar.", 110, 280, 50, [255, 255, 255], "Arial", True)
-        janela.update()
-    return pause
-
-# Verifica se o inimigo colidiu com as linhas de subida ou descida
-def colidiu(x, c1):
-    if (x.collided(c1['p1'])):
-        x.direction = 'cima'
-        return 0, -30
-    elif (x.collided(c1['p2'])):
-        x.direction = 'baixo'
-        return 0, 30
-    elif (x.collided(c1['p3'])):
-        x.direction = 'cima'
-        return 0, -30
-    elif (x.collided(c1['p4'])):
-        x.direction = 'cima'
-        return 0, -30
-    else:
-        x.direction = 'esquerda'
-        return -30, 0
-
-# Atualiza a posição dos soldados na tela, pelo caminho 1
-def atualizainimigo(lista1, c1, c2, janela):
-    for i in lista1:
-        if(i.path == 1):
-            andax, anday = colidiu(i, c1)
-            i.move_x(andax * janela.delta_time())
-            i.move_y(anday * janela.delta_time())
-        else:
-            andax, anday = colidiu(i, c2)
-            i.move_x(andax * janela.delta_time())
-            i.move_y(anday * janela.delta_time())
-
-# Cria a lista de soldados
-def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, qtd1, qtd2, x):
-    acabouw1 = False
-    acabouw2 = False
-
-    if(x < len(fase1) - 1 and fase1[x] != 0 and fase1[x + 1] != 0):
-        if (cronometro1 >= 2.5 and waves_totais < len(fase1) / 2 and x < len(fase1) and qtd1 < fase1[x]):
-            cronometro1 = 0
-            qtd1 += 1
-            soldadoverde = Sprite("Imagens/Jogo/soldadoverdeesquerda.png", 1)
-            soldadoverde.x = 1024
-            soldadoverde.y = 160
-            soldadoverde.direction = 'esquerda'
-            soldadoverde.morto = False
-            soldadoverde.vida = 100
-            soldadoverde.path = 1
-            lista1.append(soldadoverde)
-
-        elif (x < len(fase1) and qtd1 == fase1[x]and fase1[x] != 0):
-            acabouw1 = True
-
-        if (cronometro2 >= 2.5 and waves_totais < len(fase1) / 2 and x < len(fase1) - 1 and qtd2 < fase1[x + 1] and fase1[x + 1] != 0):
-            cronometro2 = 0
             qtd2 += 1
             soldadoverde1 = Sprite("Imagens/Jogo/soldadoverdeesquerda.png", 1)
             soldadoverde1.x = 800
             soldadoverde1.y = 640
             soldadoverde1.direction = 'cima'
-            soldadoverde1.morto = False
             soldadoverde1.vida = 100
+            soldadoverde1.vivo = True
+            soldadoverde1.cronometro = 0
             soldadoverde1.path = 2
             lista1.append(soldadoverde1)
 
@@ -109,8 +26,9 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde.x = 1024
             soldadoverde.y = 160
             soldadoverde.direction = 'esquerda'
-            soldadoverde.morto = False
             soldadoverde.vida = 100
+            soldadoverde.vivo = True
+            soldadoverde.cronometro = 0
             soldadoverde.path = 1
             lista1.append(soldadoverde)
 
@@ -126,8 +44,9 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde1.x = 800
             soldadoverde1.y = 640
             soldadoverde1.direction = 'cima'
-            soldadoverde1.morto = False
             soldadoverde1.vida = 100
+            soldadoverde1.vivo = True
+            soldadoverde1.cronometro = 0
             soldadoverde1.path = 2
             lista1.append(soldadoverde1)
 
@@ -142,7 +61,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
 def armadirecao(soldados, armas):
     for i in armas:
         for j in soldados:
-            if(dentrodorange(i, j)):
+            if(i.mirando == j):
                 # Se entrar, siginifica que o soldado está a direita da arma
                 if (i.x + i.width/2 + 19 < j.x + j.width / 2):
                     # Verifica e classifica de acordo com a altura do soldado
@@ -193,10 +112,11 @@ def armadirecao(soldados, armas):
 def crialistadearmas(armas, slots, mouse, dinheiro):
     for i in slots:
         if (mouse.is_over_area([i.x, i.y], [i.x + 64, i.y + 64]) and mouse.is_button_pressed(1) and dinheiro >= 100):
-            arma1 = Sprite("Imagens/Jogo/basearma1.png")
+            arma1 = Sprite("Imagens/Jogo/Arma1/arma1cima.png")
             arma1.x = i.x
             arma1.y = i.y
             arma1.direction = 'Norte'
+            arma1.mirando = None
             i.used = True
             armas.append(arma1)
             dinheiro -= 100
@@ -212,9 +132,24 @@ def criatiros(lista, armas, soldados, cronometro):
         for i in soldados:
             for j in armas:
                 if(dentrodorange(j,i)):
-                    tiro = Sprite("Imagens/Jogo/bullet.jpg")
-                    tiro.x = j.x + j.width/2
-                    tiro.y = j.y + j.height/2
+                    if(j.mirando == None):
+                        j.mirando = i
+                        print("Arma", j, "mirando", i)
+                    if(j.mirando.vivo == False):
+                        j.mirando = None
+                        print("Arma", j, "sem mira")
+
+                if(j.mirando == i):
+                    tiro = Sprite("Imagens/Jogo/soldadoverdecima.png")
+                    tiro.x = j.x + i.x/50
+                    tiro.y = j.y + i.y/50
+                    tiro.destino = [i.x, i.y]
+
+                    #define velocidade do tiro
+                    tiro.velocidade = [(i.x-j.x)/23, (i.y-j.y)/23]
+                    #define tempo de vida do tiro
+                    tiro.cronometroTiro = 0
+
                     tiro.dano = 25
                     tiro.alvo = i
                     lista.append(tiro)
@@ -223,18 +158,19 @@ def criatiros(lista, armas, soldados, cronometro):
 
 def matasoldado(tiros, soldados, dinheiro):
     for i in tiros:
-        i.alvo.vida -= i.dano
-        if(i.alvo.vida <= 0):
-            i.alvo.morto = True
-            dinheiro += 20
-        tiros.remove(i)
-    return dinheiro
+        if (i.cronometroTiro >= 20):
+            i.alvo.vida -= i.dano
+            print("Vida", i.alvo.vida, "vivo:", i.alvo.vivo)
+            if(i.alvo.vida <= 0):
+                i.alvo.vivo = False
+                dinheiro += 20
+            tiros.remove(i)
 
-def limpalista(soldados):
-    for i in soldados:
-        print(i.vida, i.morto)
-        if(i.morto == True):
-            soldados.remove(i)
+        else:
+            i.x += i.velocidade[0]
+            i.y += i.velocidade[1]
+            i.cronometroTiro += 1
+    return dinheiro
 
 # Desenha os inimigos da lista se ainda não chegaram ao fim
 def desenhainimigos(lista1, direcao):
@@ -644,17 +580,15 @@ def FASE(janela, background, mouse, teclado, fase):
 
             # Cria lista de armas
             dinheiro = crialistadearmas(listadearmas, listaslots, mouse, dinheiro)
-
+    
             # Cria lista de tiros
             cronometro3 = criatiros(listadetiros, listadearmas, listadesoldados, cronometro3)
 
             # Atualização da posição dos inimigos
             atualizainimigo(listadesoldados, caminho1, caminho2, janela)
-
+            
             # Verifica se houve tiro, faz o dano, e remove o soldado da lista caso a vida chegue a 0
             dinheiro = matasoldado(listadetiros, listadesoldados, dinheiro)
-
-            limpalista(listadesoldados)
 
             # Atualiza direção da arma em relação ao primeiro inimigo do caminho 1
             if(listadesoldados != [] and listadearmas != []):
@@ -673,14 +607,14 @@ def FASE(janela, background, mouse, teclado, fase):
 
             # Desenho dos inimigos e atualização da contagem de vidas
             vidas -= desenhainimigos(listadesoldados, svdirecao)
-
+            
             # Desenha os tiros
             for i in listadetiros:
                 i.draw()
 
             # Verifica se houve o game over
             gameover(vidas, janela)
-
+            
             # Verifica condição de vitória
             victory(fase, indice, listadesoldados, janela)
 
