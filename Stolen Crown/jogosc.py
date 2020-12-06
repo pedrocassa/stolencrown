@@ -8,16 +8,16 @@ def gameover(vidas, janela):
     if(vidas == 0):
         janela.draw_text("Game Over!", 230, 250, 100, [255, 255, 255], "Arial", True)
         janela.update()
-        janela.delay(5000)
-        exit()
+        janela.delay(3000)
+        return True
 
 # Verifica se chegou ao final da lista fase
 def victory(fase, x, soldados, janela):
     if (x == len(fase) and soldados == []):
         janela.draw_text("Victory", 350, 250, 100, [255, 255, 255], "Arial", True)
         janela.update()
-        janela.delay(5000)
-        exit()
+        janela.delay(3000)
+        return True
 
 # Pausa o jogo caso o jogador clique no enter e despausa quando aperta space
 def pausado(janela, background, teclado):
@@ -49,21 +49,20 @@ def colidiu(x, c1):
         return -30, 0
 
 # Atualiza a posição dos soldados na tela, pelo caminho 1
-def atualizainimigo(lista1, c1, c2, janela):
-    for i in lista1:
-        if (i.vivo):
-            if(i.path == 1):
-                andax, anday = colidiu(i, c1)
-                i.move_x(andax * janela.delta_time())
-                i.move_y(anday * janela.delta_time())
-            else:
-                andax, anday = colidiu(i, c2)
-                i.move_x(andax * janela.delta_time())
-                i.move_y(anday * janela.delta_time())
+def atualizainimigo(soldados, c1, c2, janela):
+    for i in soldados:
+        if(i.path == 1):
+            andax, anday = colidiu(i, c1)
+            i.move_x(andax * janela.delta_time())
+            i.move_y(anday * janela.delta_time())
+            i.centro.move_x(andax * janela.delta_time())
+            i.centro.move_y(anday * janela.delta_time())
         else:
-            i.cronometro += 1
-            if(i.cronometro > 20):
-                lista1.remove(i)
+            andax, anday = colidiu(i, c2)
+            i.move_x(andax * janela.delta_time())
+            i.move_y(anday * janela.delta_time())
+            i.centro.move_x(andax * janela.delta_time())
+            i.centro.move_y(anday * janela.delta_time())
 
 # Cria a lista de soldados
 def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, qtd1, qtd2, x):
@@ -78,10 +77,13 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde.x = 1024
             soldadoverde.y = 160
             soldadoverde.direction = 'esquerda'
+            soldadoverde.morto = False
             soldadoverde.vida = 100
-            soldadoverde.vivo = True
-            soldadoverde.cronometro = 0
             soldadoverde.path = 1
+            centro = Sprite("Imagens/Jogo/centro.jpg", 1)
+            centro.x = 1019 + soldadoverde.width/2
+            centro.y = 155 + soldadoverde.height/2
+            soldadoverde.centro = centro
             lista1.append(soldadoverde)
 
         elif (x < len(fase1) and qtd1 == fase1[x]and fase1[x] != 0):
@@ -94,10 +96,15 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde1.x = 800
             soldadoverde1.y = 640
             soldadoverde1.direction = 'cima'
+            soldadoverde1.morto = False
             soldadoverde1.vida = 100
-            soldadoverde1.vivo = True
-            soldadoverde1.cronometro = 0
             soldadoverde1.path = 2
+            centro = Sprite("Imagens/Jogo/centro.jpg")
+            centro.width = 10
+            centro.height = 10
+            centro.x = 795 + soldadoverde1.width / 2
+            centro.y = 635 + soldadoverde1.height / 2
+            soldadoverde1.centro = centro
             lista1.append(soldadoverde1)
 
         elif (x < len(fase1) - 1 and qtd2 == fase1[x + 1] and fase1[x + 1] != 0):
@@ -116,10 +123,15 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde.x = 1024
             soldadoverde.y = 160
             soldadoverde.direction = 'esquerda'
+            soldadoverde.morto = False
             soldadoverde.vida = 100
-            soldadoverde.vivo = True
-            soldadoverde.cronometro = 0
             soldadoverde.path = 1
+            centro = Sprite("Imagens/Jogo/centro.jpg")
+            centro.width = 10
+            centro.height = 10
+            centro.x = 1019 + soldadoverde.width / 2
+            centro.y = 155 + soldadoverde.height / 2
+            soldadoverde.centro = centro
             lista1.append(soldadoverde)
 
         elif (x < len(fase1) and qtd1 == fase1[x] and cronometro1 >= 10 and fase1[x] != 0):
@@ -134,10 +146,15 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde1.x = 800
             soldadoverde1.y = 640
             soldadoverde1.direction = 'cima'
+            soldadoverde1.morto = False
             soldadoverde1.vida = 100
-            soldadoverde1.vivo = True
-            soldadoverde1.cronometro = 0
             soldadoverde1.path = 2
+            centro = Sprite("Imagens/Jogo/centro.jpg")
+            centro.width = 10
+            centro.height = 10
+            centro.x = 795 + soldadoverde1.width / 2
+            centro.y = 635 + soldadoverde1.height / 2
+            soldadoverde1.centro = centro
             lista1.append(soldadoverde1)
 
         elif (x < len(fase1) - 1 and qtd2 == fase1[x + 1] and cronometro2 >= 10 and fase1[x + 1] != 0):
@@ -151,7 +168,8 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
 def armadirecao(soldados, armas):
     for i in armas:
         for j in soldados:
-            if(i.mirando == j):
+            if(dentrodorange(i, j)):
+                
                 # Se entrar, siginifica que o soldado está a direita da arma
                 if (i.x + i.width/2 + 19 < j.x + j.width / 2):
                     # Verifica e classifica de acordo com a altura do soldado
@@ -165,6 +183,7 @@ def armadirecao(soldados, armas):
                             i.direction = 'Leste/Nordeste'
                     else:
                         i.direction = 'Leste'
+                        
                 # Se entrar, siginifica que o soldado está a esquerda da arma
                 elif (i.x + i.width/2 - 19 > j.x + j.width / 2):
                     # Verifica e classifica de acordo com a altura do soldado
@@ -178,18 +197,21 @@ def armadirecao(soldados, armas):
                         i.direction = 'Oeste/Noroeste'
                     else:
                         i.direction = 'Oeste'
+                        
                 # Condição para as direções encontradas na parte de cima ou de baixo do lado direito, entre norte e nordeste, e entre sul e sudeste
                 elif (i.x + i.width / 2 + 7 < j.x + j.width / 2):
                     if (i.y + i.height / 2 < j.y + j.height / 2):
                         i.direction = 'Sul/Sudeste'
                     elif (i.y + i.height / 2 > j.y + j.height / 2):
                         i.direction = 'Norte/Nordeste'
+                        
                 # Condição para as direções encontradas na parte de cima ou de baixo do lado esquerdo, entre norte e noroeste, e entre sul e sudoeste
                 elif (i.x + i.width / 2 - 7 > j.x + j.width / 2):
                     if (i.y + i.height / 2 < j.y + j.height / 2):
                             i.direction = 'Sul/Sudoeste'
                     elif (i.y + i.height / 2 > j.y + j.height / 2):
                             i.direction = 'Norte/Noroeste'
+                        
                 # Condição para as direções restantes
                 else:
                     if (i.y + i.height / 2 > j.y + j.height / 2):
@@ -202,65 +224,56 @@ def armadirecao(soldados, armas):
 def crialistadearmas(armas, slots, mouse, dinheiro):
     for i in slots:
         if (mouse.is_over_area([i.x, i.y], [i.x + 64, i.y + 64]) and mouse.is_button_pressed(1) and dinheiro >= 100):
-            arma1 = Sprite("Imagens/Jogo/Arma1/arma1cima.png")
+            arma1 = Sprite("Imagens/Jogo/basearma1.png")
             arma1.x = i.x
             arma1.y = i.y
             arma1.direction = 'Norte'
-            arma1.mirando = None
             i.used = True
             armas.append(arma1)
             dinheiro -= 100
     return dinheiro
 
+# Verifica se o soldado está dentro do range da arma
 def dentrodorange(arma, soldado):
     if(soldado.x >= arma.x - 100  and soldado.x <= arma.x + arma.width + 100 and soldado.y >= arma.y - 100 and soldado.y <= arma.y + arma.height + 100):
         return 1
     return 0
 
+# Cria os tiros e coloca em uma lista
 def criatiros(lista, armas, soldados, cronometro):
     if(cronometro >= 1):
-        for i in soldados:
-            for j in armas:
-                if(dentrodorange(j,i)):
-                    if(j.mirando == None):
-                        j.mirando = i
-                        print("Arma", j, "mirando", i)
-                    if(j.mirando.vivo == False):
-                        j.mirando = None
-                        print("Arma", j, "sem mira")
-
-                if(j.mirando == i):
-                    tiro = Sprite("Imagens/Jogo/soldadoverdecima.png")
-                    tiro.x = j.x + i.x/50
-                    tiro.y = j.y + i.y/50
-                    tiro.destino = [i.x, i.y]
-
-                    #define velocidade do tiro
-                    tiro.velocidade = [(i.x-j.x)/23, (i.y-j.y)/23]
-                    #define tempo de vida do tiro
-                    tiro.cronometroTiro = 0
-
+        for i in armas:
+            for j in soldados: 
+                if(dentrodorange(i, j)):
+                    tiro = Sprite("Imagens/Jogo/bullet.png")
+                    tiro.x = i.x + i.width/2 - tiro.width/2
+                    tiro.y = i.y + i.height/2 - tiro.height/2
                     tiro.dano = 25
-                    tiro.alvo = i
+                    tiro.alvo = j
                     lista.append(tiro)
+                    break
         cronometro = 0
     return cronometro
 
-def matasoldado(tiros, soldados, dinheiro):
+# Atualiza a posição do tiro
+def atualizpostiro(tiros, dinheiro):
     for i in tiros:
-        if (i.cronometroTiro >= 20):
+        if(not i.collided(i.alvo.centro)):
+            i.move_x((i.alvo.centro.x - i.x)/10)
+            i.move_y((i.alvo.centro.y - i.y)/10)
+        else:
             i.alvo.vida -= i.dano
-            print("Vida", i.alvo.vida, "vivo:", i.alvo.vivo)
-            if(i.alvo.vida <= 0):
-                i.alvo.vivo = False
+            if (i.alvo.vida <= 0):
+                i.alvo.morto = True
                 dinheiro += 20
             tiros.remove(i)
-
-        else:
-            i.x += i.velocidade[0]
-            i.y += i.velocidade[1]
-            i.cronometroTiro += 1
     return dinheiro
+
+# Remove o soldado morto da lista
+def limpalista(soldados):
+    for i in soldados:
+        if(i.morto == True):
+            soldados.remove(i)
 
 # Desenha os inimigos da lista se ainda não chegaram ao fim
 def desenhainimigos(lista1, direcao):
@@ -275,14 +288,17 @@ def desenhainimigos(lista1, direcao):
             direcao['esquerda'].x = i.x
             direcao['esquerda'].y = i.y
             direcao['esquerda'].draw()
+            i.centro.draw()
         elif (i.direction == 'cima'):
             direcao['cima'].x = i.x
             direcao['cima'].y = i.y
             direcao['cima'].draw()
+            i.centro.draw()
         else:
             direcao['baixo'].x = i.x
             direcao['baixo'].y = i.y
             direcao['baixo'].draw()
+            i.centro.draw()
     return cont
 
 # Desenha arma de acordo com a direção dela
@@ -360,6 +376,8 @@ def FASE(janela, background, mouse, teclado, fase):
     vidas = 10
     dinheiro = 100
     pause = False
+    GO = False
+    GG = False
     indice = 0
     cronometro1 = 0
     cronometro2 = 0
@@ -670,15 +688,18 @@ def FASE(janela, background, mouse, teclado, fase):
 
             # Cria lista de armas
             dinheiro = crialistadearmas(listadearmas, listaslots, mouse, dinheiro)
-    
+
             # Cria lista de tiros
             cronometro3 = criatiros(listadetiros, listadearmas, listadesoldados, cronometro3)
 
             # Atualização da posição dos inimigos
             atualizainimigo(listadesoldados, caminho1, caminho2, janela)
             
-            # Verifica se houve tiro, faz o dano, e remove o soldado da lista caso a vida chegue a 0
-            dinheiro = matasoldado(listadetiros, listadesoldados, dinheiro)
+            # Atualiza a posição do tiro
+            dinheiro = atualizpostiro(listadetiros, dinheiro)
+            
+            # Remove os soldados mortos da lista
+            limpalista(listadesoldados)
 
             # Atualiza direção da arma em relação ao primeiro inimigo do caminho 1
             if(listadesoldados != [] and listadearmas != []):
@@ -697,22 +718,30 @@ def FASE(janela, background, mouse, teclado, fase):
 
             # Desenho dos inimigos e atualização da contagem de vidas
             vidas -= desenhainimigos(listadesoldados, svdirecao)
-            
+
             # Desenha os tiros
             for i in listadetiros:
                 i.draw()
 
             # Verifica se houve o game over
-            gameover(vidas, janela)
-            
+            GO = gameover(vidas, janela)
+
             # Verifica condição de vitória
-            victory(fase, indice, listadesoldados, janela)
+            GG = victory(fase, indice, listadesoldados, janela)
+
+            # Verifica se houve vitória ou derrota e sai do loop
+            if(GG == True or GO == True):
+                break
+
+            # Desenha a quantidade de vidas e do dinheiro na tela
+            janela.draw_text(f"Vidas: {vidas}", 780, 10, 20, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Dinheiro: {dinheiro}", 880, 10, 20, [255, 255, 255], "Arial", True)
 
             # Update da janela
             janela.update()
 
     # Retorna 0 para voltar ao menu no caso ESC
-    return 0
+    return GG, GO
 
 
 def jogo(fase):
@@ -726,6 +755,9 @@ def jogo(fase):
     mouse = Window.get_mouse()
     teclado = Window.get_keyboard()
 
+    venceu = False
+    perdeu = False
+
     # Listas de fases
     fase1 = [5, 0, 5, 0, 0, 5, 0, 5, 5, 5]
     fase2 = [5, 0, 5, 0, 0, 5, 0, 5, 5, 5, 7, 0, 0, 7, 7, 7]
@@ -735,11 +767,88 @@ def jogo(fase):
 
         # Deixa o jogo pausado até clicarem espaço e direciona para a fase escolhida
         if (teclado.key_pressed("space") and fase == 1):
-            FASE(janela, background, mouse, teclado, fase1)
+            venceu, perdeu = FASE(janela, background, mouse, teclado, fase1)
+            
+            # Se o jogador venceu o nivel, ele pode escolher entre continuar para o nivel 2 ou sair para o menu
+            if(venceu == True):
+                while(True):
+                    if(teclado.key_pressed("s")):
+                        fase = 2
+                        break
+                    elif(teclado.key_pressed("n")):
+                        return 0
+                    background.draw()
+                    janela.draw_text("Deseja continuar? (s -> Sim e n -> Não).", 35, 280, 50, [255, 255, 255], "Arial",
+                                     True)
+                    janela.update()
+            
+            # Se o jogar perdeu, ele pode tentar o nivel novamente ou voltar para o menu
+            if(perdeu == True):
+                while(True):
+                    if (teclado.key_pressed("s")):
+                        break
+                    elif(teclado.key_pressed("n")):
+                        return 0
+                    background.draw()
+                    janela.draw_text("Tentar Novamente? (s -> Sim e n -> Não).", 25, 280, 50, [255, 255, 255], "Arial",
+                                     True)
+                    janela.update()
+
         elif (teclado.key_pressed("space") and fase == 2):
-            FASE(janela, background, mouse, teclado, fase2)
+            venceu, perdeu = FASE(janela, background, mouse, teclado, fase2)
+
+            # Se o jogador venceu o nivel, ele pode escolher entre continuar para o nivel 3 ou sair para o menu
+            if (venceu == True):
+                while (True):
+                    if (teclado.key_pressed("s")):
+                        fase = 3
+                        break
+                    elif (teclado.key_pressed("n")):
+                        return 0
+                    background.draw()
+                    janela.draw_text("Deseja continuar? (s -> Sim e n -> Não).", 35, 280, 50, [255, 255, 255], "Arial",
+                                     True)
+                    janela.update()
+
+            # Se o jogar perdeu, ele pode tentar o nivel novamente ou voltar para o menu
+            if (perdeu == True):
+                while (True):
+                    if (teclado.key_pressed("s")):
+                        break
+                    elif (teclado.key_pressed("n")):
+                        return 0
+                    background.draw()
+                    janela.draw_text("Tentar Novamente? (s -> Sim e n -> Não).", 25, 280, 50, [255, 255, 255], "Arial",
+                                     True)
+                    janela.update()
+
         elif (teclado.key_pressed("space") and fase == 3):
-            FASE(janela, background, mouse, teclado, fase3)
+            venceu, perdeu = FASE(janela, background, mouse, teclado, fase3)
+
+            # Se o jogador venceu o nivel, ele pode escolher entre jogar novamente as fases existentes do início ou sair para o menu
+            if (venceu == True):
+                while(True):
+                    if(teclado.key_pressed("s")):
+                        fase = 1
+                        break
+                    elif(teclado.key_pressed("n")):
+                        return 0
+                    background.draw()
+                    janela.draw_text("Jogar Novamente? (s -> Sim e n -> Não).", 25, 280, 50, [255, 255, 255], "Arial",
+                                     True)
+                    janela.update()
+
+            # Se o jogar perdeu, ele pode tentar o nivel novamente ou voltar para o menu
+            if(perdeu == True):
+                while (True):
+                    if (teclado.key_pressed("s")):
+                        break
+                    elif (teclado.key_pressed("n")):
+                        return 0
+                    background.draw()
+                    janela.draw_text("Tentar Novamente? (s -> Sim e n -> Não).", 25, 280, 50, [255, 255, 255], "Arial",
+                                     True)
+                    janela.update()
 
         # Desenho na tela
         background.draw()
