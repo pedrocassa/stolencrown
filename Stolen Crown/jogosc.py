@@ -745,7 +745,7 @@ def jogo(fase):
 
     # Inicialização da janela e background estático
     janela = Window(1024, 640)
-    background = GameImage("Imagens/Jogo/background2.jpg")
+    background = GameImage("Imagens/Jogo/backgroundoficial.jpg")
     janela.set_title("Stolen Crown")
 
     # Inicialização do teclado e do mouse
