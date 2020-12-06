@@ -288,17 +288,14 @@ def desenhainimigos(lista1, direcao):
             direcao['esquerda'].x = i.x
             direcao['esquerda'].y = i.y
             direcao['esquerda'].draw()
-            i.centro.draw()
         elif (i.direction == 'cima'):
             direcao['cima'].x = i.x
             direcao['cima'].y = i.y
             direcao['cima'].draw()
-            i.centro.draw()
         else:
             direcao['baixo'].x = i.x
             direcao['baixo'].y = i.y
             direcao['baixo'].draw()
-            i.centro.draw()
     return cont
 
 # Desenha arma de acordo com a direção dela
