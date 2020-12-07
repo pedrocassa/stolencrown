@@ -633,14 +633,6 @@ def FASE(janela, background, mouse, teclado, fase, fasecont):
     # Dicionário com a direção dos soldados verdes
     svdirecao = {'esquerda': svesquerda, 'cima': svcima, 'baixo': svbaixo}
 
-    # Inicialização dos soldados pratas
-    spesquerda = Sprite("Imagens/Jogo/soldadoprataesquerda.png", 1)
-    spcima = Sprite("Imagens/Jogo/soldadopratacima.png", 1)
-    spbaixo = Sprite("Imagens/Jogo/soldadopratabaixo.png", 1)
-
-    # Dicionário com a direção dos soldados pratas
-    spdirecao = {'esquerda': spesquerda, 'cima': spcima, 'baixo': spbaixo}
-
     # Inicialização dos pontos de mudança do caminho 1
     p1 = GameObject()
     p1.x = 672
