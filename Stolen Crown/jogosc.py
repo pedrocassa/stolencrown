@@ -65,7 +65,7 @@ def atualizainimigo(soldados, c1, c2, janela):
             i.centro.move_y(anday * janela.delta_time())
 
 # Cria a lista de soldados
-def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, qtd1, qtd2, x):
+def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, qtd1, qtd2, x, contagem, time):
     acabouw1 = False
     acabouw2 = False
 
@@ -78,13 +78,14 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde.y = 160
             soldadoverde.direction = 'esquerda'
             soldadoverde.morto = False
-            soldadoverde.vida = 100
+            soldadoverde.vida = int(100 * (time * 0.01))
             soldadoverde.path = 1
             centro = Sprite("Imagens/Jogo/centro.jpg", 1)
             centro.x = 1019 + soldadoverde.width/2
             centro.y = 155 + soldadoverde.height/2
             soldadoverde.centro = centro
             lista1.append(soldadoverde)
+            print(soldadoverde.vida)
 
         elif (x < len(fase1) and qtd1 == fase1[x]and fase1[x] != 0):
             acabouw1 = True
@@ -97,7 +98,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde1.y = 640
             soldadoverde1.direction = 'cima'
             soldadoverde1.morto = False
-            soldadoverde1.vida = 100
+            soldadoverde1.vida = int(100 * (time * 0.01))
             soldadoverde1.path = 2
             centro = Sprite("Imagens/Jogo/centro.jpg")
             centro.width = 10
@@ -106,15 +107,17 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             centro.y = 635 + soldadoverde1.height / 2
             soldadoverde1.centro = centro
             lista1.append(soldadoverde1)
+            print(soldadoverde1.vida)
 
         elif (x < len(fase1) - 1 and qtd2 == fase1[x + 1] and fase1[x + 1] != 0):
             acabouw2 = True
 
-        if (acabouw1 == True and acabouw2 == True and cronometro1 >= 10):
+        if (acabouw1 == True and acabouw2 == True and cronometro1 >= 20):
             qtd1 = 0
             qtd2 = 0
             waves_totais += 1
             x += 2
+            contagem += 1
     else:
         if (cronometro1 >= 2.5 and waves_totais < len(fase1)/2 and x < len(fase1) and qtd1 < fase1[x]):
             cronometro1 = 0
@@ -124,7 +127,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde.y = 160
             soldadoverde.direction = 'esquerda'
             soldadoverde.morto = False
-            soldadoverde.vida = 100
+            soldadoverde.vida = int(100 * (time * 0.01))
             soldadoverde.path = 1
             centro = Sprite("Imagens/Jogo/centro.jpg")
             centro.width = 10
@@ -133,11 +136,13 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             centro.y = 155 + soldadoverde.height / 2
             soldadoverde.centro = centro
             lista1.append(soldadoverde)
+            print(soldadoverde.vida)
 
-        elif (x < len(fase1) and qtd1 == fase1[x] and cronometro1 >= 10 and fase1[x] != 0):
+        elif (x < len(fase1) and qtd1 == fase1[x] and cronometro1 >= 20 and fase1[x] != 0):
             qtd1 = 0
             waves_totais += 1
             x += 2
+            contagem += 1
 
         if (cronometro2 >= 2.5 and waves_totais < len(fase1) / 2 and x < len(fase1) - 1 and qtd2 < fase1[x + 1] and fase1[x + 1] != 0):
             cronometro2 = 0
@@ -147,7 +152,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde1.y = 640
             soldadoverde1.direction = 'cima'
             soldadoverde1.morto = False
-            soldadoverde1.vida = 100
+            soldadoverde1.vida = int(100 * (time * 0.01))
             soldadoverde1.path = 2
             centro = Sprite("Imagens/Jogo/centro.jpg")
             centro.width = 10
@@ -156,20 +161,21 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             centro.y = 635 + soldadoverde1.height / 2
             soldadoverde1.centro = centro
             lista1.append(soldadoverde1)
+            print(soldadoverde1.vida)
 
-        elif (x < len(fase1) - 1 and qtd2 == fase1[x + 1] and cronometro2 >= 10 and fase1[x + 1] != 0):
+        elif (x < len(fase1) - 1 and qtd2 == fase1[x + 1] and cronometro2 >= 20 and fase1[x + 1] != 0):
             qtd2 = 0
             waves_totais += 1
             x += 2
-
-    return waves_totais, cronometro1, cronometro2, qtd1, qtd2, x
+            contagem += 1
+    return waves_totais, cronometro1, cronometro2, qtd1, qtd2, x, contagem
 
 # Atualiza a direção da arma de acordo com a posição do primeiro soldado dentro do range
 def armadirecao(soldados, armas):
     for i in armas:
         for j in soldados:
             if(dentrodorange(i, j)):
-                
+
                 # Se entrar, siginifica que o soldado está a direita da arma
                 if (i.x + i.width/2 + 19 < j.x + j.width / 2):
                     # Verifica e classifica de acordo com a altura do soldado
@@ -183,7 +189,7 @@ def armadirecao(soldados, armas):
                             i.direction = 'Leste/Nordeste'
                     else:
                         i.direction = 'Leste'
-                        
+
                 # Se entrar, siginifica que o soldado está a esquerda da arma
                 elif (i.x + i.width/2 - 19 > j.x + j.width / 2):
                     # Verifica e classifica de acordo com a altura do soldado
@@ -197,21 +203,21 @@ def armadirecao(soldados, armas):
                         i.direction = 'Oeste/Noroeste'
                     else:
                         i.direction = 'Oeste'
-                        
+
                 # Condição para as direções encontradas na parte de cima ou de baixo do lado direito, entre norte e nordeste, e entre sul e sudeste
                 elif (i.x + i.width / 2 + 7 < j.x + j.width / 2):
                     if (i.y + i.height / 2 < j.y + j.height / 2):
                         i.direction = 'Sul/Sudeste'
                     elif (i.y + i.height / 2 > j.y + j.height / 2):
                         i.direction = 'Norte/Nordeste'
-                        
+
                 # Condição para as direções encontradas na parte de cima ou de baixo do lado esquerdo, entre norte e noroeste, e entre sul e sudoeste
                 elif (i.x + i.width / 2 - 7 > j.x + j.width / 2):
                     if (i.y + i.height / 2 < j.y + j.height / 2):
                             i.direction = 'Sul/Sudoeste'
                     elif (i.y + i.height / 2 > j.y + j.height / 2):
                             i.direction = 'Norte/Noroeste'
-                        
+
                 # Condição para as direções restantes
                 else:
                     if (i.y + i.height / 2 > j.y + j.height / 2):
@@ -224,13 +230,22 @@ def armadirecao(soldados, armas):
 def crialistadearmas(armas, slots, mouse, dinheiro):
     for i in slots:
         if (mouse.is_over_area([i.x, i.y], [i.x + 64, i.y + 64]) and mouse.is_button_pressed(1) and dinheiro >= 100):
-            arma1 = Sprite("Imagens/Jogo/basearma1.png")
+            arma = Sprite("Imagens/Jogo/basearma1.png")
+            arma.x = i.x
+            arma.y = i.y
+            arma.direction = 'Norte'
+            i.used = True
+            arma.tesla = False
+            armas.append(arma)
+            dinheiro -= 100
+        elif (mouse.is_over_area([i.x, i.y], [i.x + 64, i.y + 64]) and mouse.is_button_pressed(3) and dinheiro >= 200):
+            arma1 = Sprite("Imagens/Jogo/torretesla.png")
             arma1.x = i.x
             arma1.y = i.y
-            arma1.direction = 'Norte'
             i.used = True
+            arma1.tesla = True
             armas.append(arma1)
-            dinheiro -= 100
+            dinheiro -= 200
     return dinheiro
 
 # Verifica se o soldado está dentro do range da arma
@@ -243,14 +258,22 @@ def dentrodorange(arma, soldado):
 def criatiros(lista, armas, soldados, cronometro):
     if(cronometro >= 1):
         for i in armas:
-            for j in soldados: 
-                if(dentrodorange(i, j)):
+            for j in soldados:
+                if(dentrodorange(i, j) and i.tesla == False):
                     tiro = Sprite("Imagens/Jogo/bullet.png")
                     tiro.x = i.x + i.width/2 - tiro.width/2
                     tiro.y = i.y + i.height/2 - tiro.height/2
                     tiro.dano = 25
                     tiro.alvo = j
                     lista.append(tiro)
+                    break
+                elif(dentrodorange(i, j) and i.tesla == True):
+                    tiro1 = Sprite("Imagens/Jogo/bulletnova.png")
+                    tiro1.x = i.x + i.width / 2 - tiro1.width / 2
+                    tiro1.y = i.y + i.height / 2 - tiro1.height / 2
+                    tiro1.dano = 50
+                    tiro1.alvo = j
+                    lista.append(tiro1)
                     break
         cronometro = 0
     return cronometro
@@ -259,8 +282,8 @@ def criatiros(lista, armas, soldados, cronometro):
 def atualizpostiro(tiros, dinheiro):
     for i in tiros:
         if(not i.collided(i.alvo.centro)):
-            i.move_x((i.alvo.centro.x - i.x)/10)
-            i.move_y((i.alvo.centro.y - i.y)/10)
+            i.move_x((i.alvo.centro.x - i.x)/5)
+            i.move_y((i.alvo.centro.y - i.y)/5)
         else:
             i.alvo.vida -= i.dano
             if (i.alvo.vida <= 0):
@@ -301,73 +324,76 @@ def desenhainimigos(lista1, direcao):
 # Desenha arma de acordo com a direção dela
 def desenhaarma1(armas, direcao):
     for i in armas:
-        if (i.direction == 'Norte'):
-            direcao['Norte'].x = i.x
-            direcao['Norte'].y = i.y
-            direcao['Norte'].draw()
-        elif (i.direction == 'Leste'):
-            direcao['Leste'].x = i.x
-            direcao['Leste'].y = i.y
-            direcao['Leste'].draw()
-        elif (i.direction == 'Sul'):
-            direcao['Sul'].x = i.x
-            direcao['Sul'].y = i.y
-            direcao['Sul'].draw()
-        elif (i.direction == 'Oeste'):
-            direcao['Oeste'].x = i.x
-            direcao['Oeste'].y = i.y
-            direcao['Oeste'].draw()
-        elif (i.direction == 'Nordeste'):
-            direcao['Nordeste'].x = i.x
-            direcao['Nordeste'].y = i.y
-            direcao['Nordeste'].draw()
-        elif (i.direction == 'Sudeste'):
-            direcao['Sudeste'].x = i.x
-            direcao['Sudeste'].y = i.y
-            direcao['Sudeste'].draw()
-        elif (i.direction == 'Noroeste'):
-            direcao['Noroeste'].x = i.x
-            direcao['Noroeste'].y = i.y
-            direcao['Noroeste'].draw()
-        elif (i.direction == 'Sudoeste'):
-            direcao['Sudoeste'].x = i.x
-            direcao['Sudoeste'].y = i.y
-            direcao['Sudoeste'].draw()
-        elif (i.direction == 'Norte/Nordeste'):
-            direcao['Norte/Nordeste'].x = i.x
-            direcao['Norte/Nordeste'].y = i.y
-            direcao['Norte/Nordeste'].draw()
-        elif (i.direction == 'Norte/Noroeste'):
-            direcao['Norte/Noroeste'].x = i.x
-            direcao['Norte/Noroeste'].y = i.y
-            direcao['Norte/Noroeste'].draw()
-        elif (i.direction == 'Leste/Nordeste'):
-            direcao['Leste/Nordeste'].x = i.x
-            direcao['Leste/Nordeste'].y = i.y
-            direcao['Leste/Nordeste'].draw()
-        elif (i.direction == 'Leste/Sudeste'):
-            direcao['Leste/Sudeste'].x = i.x
-            direcao['Leste/Sudeste'].y = i.y
-            direcao['Leste/Sudeste'].draw()
-        elif (i.direction == 'Sul/Sudeste'):
-            direcao['Sul/Sudeste'].x = i.x
-            direcao['Sul/Sudeste'].y = i.y
-            direcao['Sul/Sudeste'].draw()
-        elif (i.direction == 'Sul/Sudoeste'):
-            direcao['Sul/Sudoeste'].x = i.x
-            direcao['Sul/Sudoeste'].y = i.y
-            direcao['Sul/Sudoeste'].draw()
-        elif (i.direction == 'Oeste/Sudoeste'):
-            direcao['Oeste/Sudoeste'].x = i.x
-            direcao['Oeste/Sudoeste'].y = i.y
-            direcao['Oeste/Sudoeste'].draw()
+        if(i.tesla == False):
+            if (i.direction == 'Norte'):
+                direcao['Norte'].x = i.x
+                direcao['Norte'].y = i.y
+                direcao['Norte'].draw()
+            elif (i.direction == 'Leste'):
+                direcao['Leste'].x = i.x
+                direcao['Leste'].y = i.y
+                direcao['Leste'].draw()
+            elif (i.direction == 'Sul'):
+                direcao['Sul'].x = i.x
+                direcao['Sul'].y = i.y
+                direcao['Sul'].draw()
+            elif (i.direction == 'Oeste'):
+                direcao['Oeste'].x = i.x
+                direcao['Oeste'].y = i.y
+                direcao['Oeste'].draw()
+            elif (i.direction == 'Nordeste'):
+                direcao['Nordeste'].x = i.x
+                direcao['Nordeste'].y = i.y
+                direcao['Nordeste'].draw()
+            elif (i.direction == 'Sudeste'):
+                direcao['Sudeste'].x = i.x
+                direcao['Sudeste'].y = i.y
+                direcao['Sudeste'].draw()
+            elif (i.direction == 'Noroeste'):
+                direcao['Noroeste'].x = i.x
+                direcao['Noroeste'].y = i.y
+                direcao['Noroeste'].draw()
+            elif (i.direction == 'Sudoeste'):
+                direcao['Sudoeste'].x = i.x
+                direcao['Sudoeste'].y = i.y
+                direcao['Sudoeste'].draw()
+            elif (i.direction == 'Norte/Nordeste'):
+                direcao['Norte/Nordeste'].x = i.x
+                direcao['Norte/Nordeste'].y = i.y
+                direcao['Norte/Nordeste'].draw()
+            elif (i.direction == 'Norte/Noroeste'):
+                direcao['Norte/Noroeste'].x = i.x
+                direcao['Norte/Noroeste'].y = i.y
+                direcao['Norte/Noroeste'].draw()
+            elif (i.direction == 'Leste/Nordeste'):
+                direcao['Leste/Nordeste'].x = i.x
+                direcao['Leste/Nordeste'].y = i.y
+                direcao['Leste/Nordeste'].draw()
+            elif (i.direction == 'Leste/Sudeste'):
+                direcao['Leste/Sudeste'].x = i.x
+                direcao['Leste/Sudeste'].y = i.y
+                direcao['Leste/Sudeste'].draw()
+            elif (i.direction == 'Sul/Sudeste'):
+                direcao['Sul/Sudeste'].x = i.x
+                direcao['Sul/Sudeste'].y = i.y
+                direcao['Sul/Sudeste'].draw()
+            elif (i.direction == 'Sul/Sudoeste'):
+                direcao['Sul/Sudoeste'].x = i.x
+                direcao['Sul/Sudoeste'].y = i.y
+                direcao['Sul/Sudoeste'].draw()
+            elif (i.direction == 'Oeste/Sudoeste'):
+                direcao['Oeste/Sudoeste'].x = i.x
+                direcao['Oeste/Sudoeste'].y = i.y
+                direcao['Oeste/Sudoeste'].draw()
+            else:
+                direcao['Oeste/Noroeste'].x = i.x
+                direcao['Oeste/Noroeste'].y = i.y
+                direcao['Oeste/Noroeste'].draw()
         else:
-            direcao['Oeste/Noroeste'].x = i.x
-            direcao['Oeste/Noroeste'].y = i.y
-            direcao['Oeste/Noroeste'].draw()
+            i.draw()
 
 # Função da fase
-def FASE(janela, background, mouse, teclado, fase):
+def FASE(janela, background, mouse, teclado, fase, fasecont):
 
     # Inicicialização de variáveis importantes
     vidas = 10
@@ -376,9 +402,11 @@ def FASE(janela, background, mouse, teclado, fase):
     GO = False
     GG = False
     indice = 0
+    contagem = 1
     cronometro1 = 0
     cronometro2 = 0
     cronometro3 = 0
+    tempo_vida = 0
     qtddeinimigos1 = 0
     qtddeinimigos2 = 0
     waves_totais = 0
@@ -676,11 +704,12 @@ def FASE(janela, background, mouse, teclado, fase):
             cronometro1 += janela.delta_time()
             cronometro2 += janela.delta_time()
             cronometro3 += janela.delta_time()
+            tempo_vida += janela.delta_time()
 
             # Criação das listas de soldados
-            waves_totais, cronometro1, cronometro2, qtddeinimigos1, qtddeinimigos2, indice = \
+            waves_totais, cronometro1, cronometro2, qtddeinimigos1, qtddeinimigos2, indice, contagem = \
                 crialistasdesoldados(listadesoldados, cronometro1, cronometro2, fase, waves_totais, qtddeinimigos1,
-                                     qtddeinimigos2, indice)
+                                     qtddeinimigos2, indice, contagem, tempo_vida)
 
 
             # Cria lista de armas
@@ -691,10 +720,10 @@ def FASE(janela, background, mouse, teclado, fase):
 
             # Atualização da posição dos inimigos
             atualizainimigo(listadesoldados, caminho1, caminho2, janela)
-            
+
             # Atualiza a posição do tiro
             dinheiro = atualizpostiro(listadetiros, dinheiro)
-            
+
             # Remove os soldados mortos da lista
             limpalista(listadesoldados)
 
@@ -731,8 +760,18 @@ def FASE(janela, background, mouse, teclado, fase):
                 break
 
             # Desenha a quantidade de vidas e do dinheiro na tela
-            janela.draw_text(f"Vidas: {vidas}", 780, 10, 20, [255, 255, 255], "Arial", True)
-            janela.draw_text(f"Dinheiro: {dinheiro}", 880, 10, 20, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Vidas: {vidas}", 192, 20, 20, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Dinheiro: ${dinheiro}", 290, 20, 20, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Wave: {contagem}", 900, 10, 30, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Fase: {fasecont}", 780, 10, 30, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Pressione ESC para voltar para o menu.", 10, 610, 20, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Pressione (mouse):", 10, 490, 20, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Botão E -> Arma 1 ($100)", 10, 510, 20, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Botão D -> Arma 2 ($200)", 10, 530, 20, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Pressione (teclado):", 10, 550, 20, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Enter -> Pausar", 10, 570, 20, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Space -> Despausar", 10, 590, 20, [255, 255, 255], "Arial", True)
+
 
             # Update da janela
             janela.update()
@@ -764,8 +803,8 @@ def jogo(fase):
 
         # Deixa o jogo pausado até clicarem espaço e direciona para a fase escolhida
         if (teclado.key_pressed("space") and fase == 1):
-            venceu, perdeu = FASE(janela, background, mouse, teclado, fase1)
-            
+            venceu, perdeu = FASE(janela, background, mouse, teclado, fase1, fase)
+
             # Se o jogador venceu o nivel, ele pode escolher entre continuar para o nivel 2 ou sair para o menu
             if(venceu == True):
                 while(True):
@@ -778,7 +817,7 @@ def jogo(fase):
                     janela.draw_text("Deseja continuar? (s -> Sim e n -> Não).", 35, 280, 50, [255, 255, 255], "Arial",
                                      True)
                     janela.update()
-            
+
             # Se o jogar perdeu, ele pode tentar o nivel novamente ou voltar para o menu
             if(perdeu == True):
                 while(True):
@@ -792,7 +831,7 @@ def jogo(fase):
                     janela.update()
 
         elif (teclado.key_pressed("space") and fase == 2):
-            venceu, perdeu = FASE(janela, background, mouse, teclado, fase2)
+            venceu, perdeu = FASE(janela, background, mouse, teclado, fase2, fase)
 
             # Se o jogador venceu o nivel, ele pode escolher entre continuar para o nivel 3 ou sair para o menu
             if (venceu == True):
@@ -820,7 +859,7 @@ def jogo(fase):
                     janela.update()
 
         elif (teclado.key_pressed("space") and fase == 3):
-            venceu, perdeu = FASE(janela, background, mouse, teclado, fase3)
+            venceu, perdeu = FASE(janela, background, mouse, teclado, fase3, fase)
 
             # Se o jogador venceu o nivel, ele pode escolher entre jogar novamente as fases existentes do início ou sair para o menu
             if (venceu == True):
