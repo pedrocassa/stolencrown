@@ -34,19 +34,19 @@ def pausado(janela, background, teclado):
 def colidiu(x, c1):
     if (x.collided(c1['p1'])):
         x.direction = 'cima'
-        return 0, -30
+        return 0, -35
     elif (x.collided(c1['p2'])):
         x.direction = 'baixo'
-        return 0, 30
+        return 0, 35
     elif (x.collided(c1['p3'])):
         x.direction = 'cima'
-        return 0, -30
+        return 0, -35
     elif (x.collided(c1['p4'])):
         x.direction = 'cima'
-        return 0, -30
+        return 0, -35
     else:
         x.direction = 'esquerda'
-        return -30, 0
+        return -35, 0
 
 # Atualiza a posição dos soldados na tela, pelo caminho 1
 def atualizainimigo(soldados, c1, c2, janela):
@@ -65,7 +65,7 @@ def atualizainimigo(soldados, c1, c2, janela):
             i.centro.move_y(anday * janela.delta_time())
 
 # Cria a lista de soldados
-def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, qtd1, qtd2, x, contagem, time):
+def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, qtd1, qtd2, x, contagem):
     acabouw1 = False
     acabouw2 = False
 
@@ -78,7 +78,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde.y = 160
             soldadoverde.direction = 'esquerda'
             soldadoverde.morto = False
-            soldadoverde.vida = int(100 * (time * 0.01))
+            soldadoverde.vida = 25 + (50 * (contagem - 1))
             soldadoverde.path = 1
             centro = Sprite("Imagens/Jogo/centro.jpg", 1)
             centro.x = 1019 + soldadoverde.width/2
@@ -98,7 +98,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde1.y = 640
             soldadoverde1.direction = 'cima'
             soldadoverde1.morto = False
-            soldadoverde1.vida = int(100 * (time * 0.01))
+            soldadoverde1.vida = 25 + (50 * (contagem - 1))
             soldadoverde1.path = 2
             centro = Sprite("Imagens/Jogo/centro.jpg")
             centro.width = 10
@@ -127,7 +127,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde.y = 160
             soldadoverde.direction = 'esquerda'
             soldadoverde.morto = False
-            soldadoverde.vida = int(100 * (time * 0.01))
+            soldadoverde.vida = 25 + (50 * (contagem - 1))
             soldadoverde.path = 1
             centro = Sprite("Imagens/Jogo/centro.jpg")
             centro.width = 10
@@ -152,7 +152,7 @@ def crialistasdesoldados(lista1, cronometro1, cronometro2, fase1, waves_totais, 
             soldadoverde1.y = 640
             soldadoverde1.direction = 'cima'
             soldadoverde1.morto = False
-            soldadoverde1.vida = int(100 * (time * 0.01))
+            soldadoverde1.vida = 25 + (50 * (contagem - 1))
             soldadoverde1.path = 2
             centro = Sprite("Imagens/Jogo/centro.jpg")
             centro.width = 10
@@ -250,13 +250,13 @@ def crialistadearmas(armas, slots, mouse, dinheiro):
 
 # Verifica se o soldado está dentro do range da arma
 def dentrodorange(arma, soldado):
-    if(soldado.x >= arma.x - 100  and soldado.x <= arma.x + arma.width + 100 and soldado.y >= arma.y - 100 and soldado.y <= arma.y + arma.height + 100):
+    if(soldado.x + soldado.width/2 >= arma.x - 96  and soldado.x + soldado.width/2 <= arma.x + arma.width + 96 and soldado.y + soldado.height/2 >= arma.y - 96 and soldado.y + soldado.height/2 <= arma.y + arma.height + 96):
         return 1
     return 0
 
 # Cria os tiros e coloca em uma lista
 def criatiros(lista, armas, soldados, cronometro):
-    if(cronometro >= 1):
+    if(cronometro >= 0.8):
         for i in armas:
             for j in soldados:
                 if(dentrodorange(i, j) and i.tesla == False):
@@ -282,8 +282,8 @@ def criatiros(lista, armas, soldados, cronometro):
 def atualizpostiro(tiros, dinheiro):
     for i in tiros:
         if(not i.collided(i.alvo.centro)):
-            i.move_x((i.alvo.centro.x - i.x)/5)
-            i.move_y((i.alvo.centro.y - i.y)/5)
+            i.move_x((i.alvo.centro.x - i.x)/3)
+            i.move_y((i.alvo.centro.y - i.y)/3)
         else:
             i.alvo.vida -= i.dano
             if (i.alvo.vida <= 0):
@@ -680,7 +680,6 @@ def FASE(janela, background, mouse, teclado, fase, fasecont):
     # Dicionário de caminhos
     caminho1 = {'p1': p1, 'p2': p2, 'p3': p3, 'p4': p4}
     caminho2 = {'p1': p5, 'p2': p6, 'p3': p7, 'p4': p8}
-    caminhos = {'1': caminho1, '2': caminho2}
 
     # GameLoop
     while (not teclado.key_pressed("esc")):
@@ -696,12 +695,11 @@ def FASE(janela, background, mouse, teclado, fase, fasecont):
             cronometro1 += janela.delta_time()
             cronometro2 += janela.delta_time()
             cronometro3 += janela.delta_time()
-            tempo_vida += janela.delta_time()
 
             # Criação das listas de soldados
             waves_totais, cronometro1, cronometro2, qtddeinimigos1, qtddeinimigos2, indice, contagem = \
                 crialistasdesoldados(listadesoldados, cronometro1, cronometro2, fase, waves_totais, qtddeinimigos1,
-                                     qtddeinimigos2, indice, contagem, tempo_vida)
+                                     qtddeinimigos2, indice, contagem)
 
 
             # Cria lista de armas
@@ -754,8 +752,8 @@ def FASE(janela, background, mouse, teclado, fase, fasecont):
             # Desenha a quantidade de vidas e do dinheiro na tela
             janela.draw_text(f"Vidas: {vidas}", 192, 20, 20, [255, 255, 255], "Arial", True)
             janela.draw_text(f"Dinheiro: ${dinheiro}", 290, 20, 20, [255, 255, 255], "Arial", True)
-            janela.draw_text(f"Wave: {contagem}", 900, 10, 30, [255, 255, 255], "Arial", True)
-            janela.draw_text(f"Fase: {fasecont}", 780, 10, 30, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Wave: {contagem}", 900, 15, 25, [255, 255, 255], "Arial", True)
+            janela.draw_text(f"Fase: {fasecont}", 795, 15, 25, [255, 255, 255], "Arial", True)
             janela.draw_text(f"Pressione ESC para voltar para o menu.", 10, 610, 20, [255, 255, 255], "Arial", True)
             janela.draw_text(f"Pressione (mouse):", 10, 490, 20, [255, 255, 255], "Arial", True)
             janela.draw_text(f"Botão E -> Arma 1 ($100)", 10, 510, 20, [255, 255, 255], "Arial", True)
